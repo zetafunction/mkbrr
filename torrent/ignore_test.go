@@ -1,6 +1,7 @@
 package torrent
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -48,6 +49,31 @@ func TestShouldIgnoreFile(t *testing.T) {
 
 		// If both patterns are given, only includePatterns is used.
 		{"media.mkv", []string{"media.mkv"}, []string{"media.mkv"}, false},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.path, func(t *testing.T) {
+			ignored, err := shouldIgnoreFile(tc.path, tc.excludePatterns, tc.includePatterns)
+			assert.Nil(t, err)
+			if ignored != tc.expected {
+				t.Errorf("shouldIgnoreFile(%v, excludePatterns = %v, includePatterns = %v) = %v, want %v", tc.path, tc.excludePatterns, tc.includePatterns, ignored, tc.expected)
+			}
+		})
+	}
+}
+
+func TestShouldIgnoreFileWithPathPatterns(t *testing.T) {
+	tests := []struct {
+		path            string
+		excludePatterns []string
+		includePatterns []string
+		expected        bool
+	}{
+		{"dir/file", []string{}, []string{filepath.Join("dir", "*")}, false},
+		{"dir2/file", []string{}, []string{filepath.Join("dir", "*")}, true},
+
+		{"dir/file", []string{filepath.Join("dir", "*")}, []string{}, true},
+		{"dir2/file", []string{filepath.Join("dir", "*")}, []string{}, false},
 	}
 
 	for _, tc := range tests {

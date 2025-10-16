@@ -48,7 +48,14 @@ func shouldIgnoreFile(path string, excludePatterns []string, includePatterns []s
 				if pattern == "" {
 					continue
 				}
-				match, err := filepath.Match(strings.ToLower(pattern), lowerFilename)
+				var match bool
+				var err error
+				lowerPattern := strings.ToLower(pattern)
+				if strings.ContainsRune(lowerPattern, filepath.Separator) {
+					match, err = filepath.Match(lowerPattern, lowerPath)
+				} else {
+					match, err = filepath.Match(lowerPattern, lowerFilename)
+				}
 				if err != nil {
 					return false, fmt.Errorf("invalid include pattern %q: %w", pattern, err)
 				}
@@ -77,7 +84,14 @@ func shouldIgnoreFile(path string, excludePatterns []string, includePatterns []s
 				if pattern == "" {
 					continue
 				}
-				match, err := filepath.Match(strings.ToLower(pattern), lowerFilename)
+				var match bool
+				var err error
+				lowerPattern := strings.ToLower(pattern)
+				if strings.ContainsRune(lowerPattern, filepath.Separator) {
+					match, err = filepath.Match(lowerPattern, lowerPath)
+				} else {
+					match, err = filepath.Match(lowerPattern, lowerFilename)
+				}
 				if err != nil {
 					return false, fmt.Errorf("invalid exclude pattern %q: %w", pattern, err)
 				}

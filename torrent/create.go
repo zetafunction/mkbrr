@@ -223,7 +223,8 @@ func CreateTorrent(opts CreateOptions) (*Torrent, error) {
 		}
 
 		// it's a file (or a link pointing to one)
-		shouldIgnore, err := shouldIgnoreFile(currentPath, opts.ExcludePatterns, opts.IncludePatterns) // ignore based on original path
+		checkPath, _ := filepath.Rel(baseDir, currentPath) // ignore based on original path
+		shouldIgnore, err := shouldIgnoreFile(checkPath, opts.ExcludePatterns, opts.IncludePatterns)
 		if err != nil {
 			return fmt.Errorf("error processing file patterns for %q: %w", currentPath, err)
 		}
